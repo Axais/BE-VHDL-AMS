@@ -1,7 +1,7 @@
 # BE VHDL-AMS — Système de freinage ABS
 
 Modélisation multi-physique d'un quart de véhicule en phase de freinage, puis de
-sa régulation ABS. M2 SME, Université Paul Sabatier — Toulouse.
+sa régulation ABS.
 
 Outils : Questa ADMS 2023.2 (noyau analogique ELDO, visualisation EZwave),
 simulation transitoire `.tran 0.1s 10s`.
@@ -52,5 +52,3 @@ vacom src/test.vhd
 vasim -cmd testo.cmd test f -lib Travail
 ```
 
-La bibliothèque compilée (`Travail/`), les formes d'onde et les transcripts ne
-sont pas versionnés.
