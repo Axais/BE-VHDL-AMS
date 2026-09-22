@@ -1,0 +1,28 @@
+# ------------------------------------------------------------------
+# Bibliotheque et artefacts de compilation Questa ADMS / ModelSim
+# (regeneres a chaque compilation, aucun interet en versionnement)
+# ------------------------------------------------------------------
+Travail/
+modelsim.ini
+transcript
+transcript_ms
+*.wdb
+*.chi
+*.id
+*.reuse
+*.cmd
+*.log
+.jwdb*
+.cir*
+testo.*
+
+# ------------------------------------------------------------------
+# Documents de cours fournis par l'enseignant (non redistribues)
+# ------------------------------------------------------------------
+*.pdf
+
+# ------------------------------------------------------------------
+# Fichiers temporaires
+# ------------------------------------------------------------------
+.~lock.*#
+*~

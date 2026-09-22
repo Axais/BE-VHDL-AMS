@@ -1,0 +1,15 @@
+MC: 	
+		generic map (S=>1.0e-4, coef_assistance=>10.0)
+
+Disque: 
+		generic map (coef_fric=>0.36, S=>1.0e-3, R=>0.12)
+--coef friction = 0.55 pour garnitures competition (http://www.carbonelorraine-motorsport.com/gamme.htm)
+--coef friction = 0.36 pour garnitures standard (http://racing-stuff.com/brakes.htm)
+
+Roued: 	 
+		--generic map(route=>seche, m=>m_veh, rR=>0.275, IR=>0.4, mu0_D=>1.0, As=>0.01, mu0_W=>0.5, Vc=>27.8)
+ 		generic map (route=>humide, m=>m_veh, rR=>0.275, IR=>0.4, mu0_D=>1.0, As=>0.01, mu0_W=>0.5, Vc=>27.8)
+
+ 		
+Auto: 	generic map (m=>m_veh,cx=>0.3,S=>1.8,v_init=>28.0) 
+ 

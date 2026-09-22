@@ -1,0 +1,7 @@
+# Pas de conversion de fins de ligne : les sources sont editees sous Linux
+# (station AIME) et sous Windows, on conserve les octets tels quels.
+* -text
+
+*.odp binary
+*.png binary
+*.pdf binary
