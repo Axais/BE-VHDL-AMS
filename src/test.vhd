@@ -2,6 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.mechanical_systems.all;
 use ieee.fluidic_systems.all;
+use ieee.electrical_systems.all;
 
 use work.MES_TYPES.all;
 use work.MES_CONSTANTES.all;
@@ -11,7 +12,7 @@ entity test is
 end test;
 
 --------------------------------------------------------------------------------------------------------------
--- Test véhicule seul
+-- Étape 1 : véhicule seul
 --------------------------------------------------------------------------------------------------------------
 architecture A of test is
   terminal t1 : translational_velocity;
@@ -38,7 +39,7 @@ end B;
 
 
 --------------------------------------------------------------------------------------------------------------
--- Test véhicule + roue
+-- Étape 2 : véhicule + roue
 --------------------------------------------------------------------------------------------------------------
 architecture C of test is
   terminal t1 : translational_velocity;
@@ -80,7 +81,7 @@ end D;
 
 
 --------------------------------------------------------------------------------------------------------------
--- Test véhicule + roue + frein
+-- Étape 3 : véhicule + roue + frein
 --------------------------------------------------------------------------------------------------------------
 architecture E of test is
   terminal t1 : translational_velocity;
@@ -109,7 +110,7 @@ begin
 end E;
 
 --------------------------------------------------------------------------------------------------------------
--- Test véhicule + roue + frein + maître cylindre
+-- Étape 4 : véhicule + roue + frein + maître cylindre
 --------------------------------------------------------------------------------------------------------------
 
 architecture F of test is
@@ -117,14 +118,10 @@ architecture F of test is
   terminal t2 : rotational_velocity;
   terminal t3 : fluidic;
 
-
-  quantity press across debit through t3;
-  
-  quantity f_cmd : real;
+  quantity f_cmd : real;          
   
 begin
   f_cmd == 180.0;
-  press == 18.0e6;
  
   U_veh: entity vehicule(one) 
     generic map (m => m_veh, cx => 0.3, S => 1.8, v_init => 28.0) 
@@ -142,3 +139,37 @@ begin
     generic map (S => 1.0e-4, coef_assistance => 10.0)
     port map (Tfrein => t3, force => f_cmd); 
 end F;
+
+
+--------------------------------------------------------------------------------------------------------------
+-- Étape 5 : véhicule + roue + frein + maître cylindre + signal COND
+--------------------------------------------------------------------------------------------------------------
+
+architecture G of test is
+  terminal t1 : translational_velocity;
+  terminal t2 : rotational_velocity;
+  terminal t3 : fluidic;
+
+  signal COND : real := 0.0;      
+  quantity f_cmd : real;
+  
+begin
+  COND <= 180.0 after 100 ms;
+  f_cmd == COND'ramp(0.5, 0.5);
+ 
+  U_veh: entity vehicule(one) 
+    generic map (m => m_veh, cx => 0.3, S => 1.8, v_init => 28.0) 
+    port map (Troue => t1);
+    
+  U_roue: entity roue(A) 
+    generic map (route => seche, m => m_veh, rR => 0.275, IR => 0.4, mu0_D => 1.0, As => 0.01, mu0_W => 0.5, Vc => 27.8)
+    port map (Tveh => t1, Tfrein => t2);
+    
+  U_frein: entity frein(one)
+    generic map (coef_fric => 0.36, S => 1.0e-3, R => 0.12)
+    port map (Troue => t2, TMC => t3);
+    
+  U_MC: entity maitre_cylindre(one)
+    generic map (S => 1.0e-4, coef_assistance => 10.0)
+    port map (Tfrein => t3, force => f_cmd); 
+end G;
