@@ -12,5 +12,7 @@ architecture one of regulP is
   quantity Vcmd across Icmd through Tcmd;
   
 begin
-  Pout==Pin*Vcmd/5.0;
+  Pout==Pin*Vcmd/5.0;  
+  Icmd==0.0;            
+  Din==0.0;
 end one;

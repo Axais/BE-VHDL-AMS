@@ -173,3 +173,83 @@ begin
     generic map (S => 1.0e-4, coef_assistance => 10.0)
     port map (Tfrein => t3, force => f_cmd); 
 end G;
+
+
+--------------------------------------------------------------------------------------------------------------
+-- Test régulateur : véhicule + roue + frein + régulateur + MC + signal COND
+--------------------------------------------------------------------------------------------------------------
+
+architecture H of test is
+  terminal t1 : translational_velocity;
+  terminal t2 : rotational_velocity;
+  terminal t3 : fluidic;                     -- maître cylindre -> régulateur
+  terminal t4 : fluidic;                     -- régulateur -> étrier
+  terminal t5 : electrical;                  -- commande du régulateur
+
+  quantity f_cmd : real;                     
+  quantity Vcmd across Icmd through t5;      -- source de commande
+
+begin
+  f_cmd == 180.0;
+  Vcmd  == 5.0;
+ 
+  U_veh: entity vehicule(one) 
+    generic map (m => m_veh, cx => 0.3, S => 1.8, v_init => 28.0) 
+    port map (Troue => t1);
+    
+  U_roue: entity roue(A) 
+    generic map (route => seche, m => m_veh, rR => 0.275, IR => 0.4, mu0_D => 1.0, As => 0.01, mu0_W => 0.5, Vc => 27.8)
+    port map (Tveh => t1, Tfrein => t2);
+    
+  U_frein: entity frein(one)
+    generic map (coef_fric => 0.36, S => 1.0e-3, R => 0.12)
+    port map (Troue => t2, TMC => t4);
+    
+  U_regul: entity regulP(one)
+    port map (TMC => t3, Tfrein => t4, Tcmd => t5);
+    
+  U_MC: entity maitre_cylindre(one)
+    generic map (S => 1.0e-4, coef_assistance => 10.0)
+    port map (Tfrein => t3, force => f_cmd); 
+end H;
+
+
+--------------------------------------------------------------------------------------------------------------
+-- Test régulateur sur route humide : échelon de Vcmd à t = 2 s, de 5 V à 1 V
+--------------------------------------------------------------------------------------------------------------
+
+architecture I of test is
+  terminal t1 : translational_velocity;
+  terminal t2 : rotational_velocity;
+  terminal t3 : fluidic;                     -- maître cylindre -> régulateur
+  terminal t4 : fluidic;                     -- régulateur -> étrier
+  terminal t5 : electrical;                  -- commande du régulateur
+
+  quantity f_cmd : real;                     
+  quantity Vcmd across Icmd through t5;      -- source de commande
+  signal CMD : real := 5.0;                  -- consigne du régulateur, en V
+
+begin
+  f_cmd == 180.0;
+  CMD  <= 1.0 after 2000 ms;                 -- échelon du sujet (regulateur.odp)
+  Vcmd == CMD'ramp(0.01);
+ 
+  U_veh: entity vehicule(one) 
+    generic map (m => m_veh, cx => 0.3, S => 1.8, v_init => 28.0) 
+    port map (Troue => t1);
+    
+  U_roue: entity roue(A) 
+    generic map (route => humide, m => m_veh, rR => 0.275, IR => 0.4, mu0_D => 1.0, As => 0.01, mu0_W => 0.5, Vc => 27.8)
+    port map (Tveh => t1, Tfrein => t2);
+    
+  U_frein: entity frein(one)
+    generic map (coef_fric => 0.36, S => 1.0e-3, R => 0.12)
+    port map (Troue => t2, TMC => t4);
+    
+  U_regul: entity regulP(one)
+    port map (TMC => t3, Tfrein => t4, Tcmd => t5);
+    
+  U_MC: entity maitre_cylindre(one)
+    generic map (S => 1.0e-4, coef_assistance => 10.0)
+    port map (Tfrein => t3, force => f_cmd); 
+end I;
